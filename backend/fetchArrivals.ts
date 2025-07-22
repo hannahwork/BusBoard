@@ -1,7 +1,6 @@
 import axios from 'axios';
 
 const API_KEY = import.meta.env.VITE_TFL_APP_KEY;
-// const STOP_CODE = "490008660N"
 
 export async function fetchArrivals(stopcode: string) {
   
