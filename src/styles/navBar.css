@@ -1,0 +1,14 @@
+.navbar{
+    display: flex;
+    align-items: center;
+    padding: 10px 20px;
+    background-color: #0009AB;
+    color: white;
+    a{
+        display: flex;
+        align-items: center;
+        text-decoration: none;
+        color: white;
+        font-size: 18px;
+    }
+}

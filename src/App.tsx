@@ -64,7 +64,7 @@ function App() {
 
   return (
     <div>
-      <h1 className="text-3xl font-bold underline text-center text-cyan-600 m-4">BusBoard</h1>
+      <h1 className="text-3xl font-bold underline text-center" style={{ color: "black", marginTop: "1rem" }}>BusBoard</h1>
       <div className='get-input-and-button'>
         <input
           type="text"
