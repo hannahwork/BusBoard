@@ -5,13 +5,22 @@ import { fetchNearestStopsFromPostcode } from '../backend/fetchPostcodes';
 
 function App() {
 
-  const [arrivalsData, setArrivalsData] = useState<string>();
-  const [nearestStops, setNearestStops] = useState<string>();
+  const [arrivalsData, setArrivalsData] = useState<any[]>([]);
+  const [nearestStops, setNearestStops] = useState<any[]>([]);
   const [stopCode, setStopCode] = useState<string>("");
   const [postCode, setPostCode] = useState<string>("");
   const [postCodeError, setPostCodeError] = useState<string>("");
   const [stopCodeError, setStopCodeError] = useState<string>("");
 
+    const handleUserInput = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    setStopCode(event.target.value);
+    if (event.target.value.length === 0) {
+      setStopCodeError("Please enter a valid stop code.");
+    } else {
+      setStopCodeError("");
+    }
+  };
+  
   const handleClick = async () => {
     if (stopCode.length === 0) {
       setStopCodeError("Please enter a valid stop code.");
@@ -25,43 +34,22 @@ function App() {
       setStopCodeError("");
     }
     setArrivalsData(response);
-  }
-
-  const handleUserInput = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setStopCode(event.target.value);
-    if (event.target.value.length === 0) {
-      setStopCodeError("Please enter a valid stop code.");
-    } else {
-      setStopCodeError("");
-    }
-
   };
 
   const handlePostcodeUserInput = async (event: React.ChangeEvent<HTMLInputElement>) => {
     setPostCode(event.target.value);
+    setNearestStops([]);
     if (event.target.value.length === 0) {
       setPostCodeError("Please enter a valid postcode.");
     } else {
       setPostCodeError("");
-    }
-    fetchNearestStopsFromPostcode(postCode)
-      .then(stops => {
-        if (stops.length === 0) {
-          setError("No stops found near this postcode.");
-        } else {
-          setError("");
-          console.log("Nearest Stops:", stops);
-        }
-      })
-      .catch(err => {
-        setError("Error fetching stops: " + err.message);
-      });
-    setNearestStops(stops => JSON.stringify(stops, null, 2));
+    };
   };
 
   const handlePostcodeClick = async () => {
     if (postCode.length === 0) {
       setPostCodeError("Please enter a valid Post code.");
+      setNearestStops([]);
       return;
     }
     const response = await fetchNearestStopsFromPostcode(postCode)
@@ -76,7 +64,7 @@ function App() {
 
   return (
     <div>
-      <h1 className="text-3xl font-bold underline text-center text-cyan-600 m-4">BusBoard</h1>
+      <h1 className="text-3xl font-bold underline text-center" style={{ color: "black", marginTop: "1rem" }}>BusBoard</h1>
       <div className='get-input-and-button'>
         <input
           type="text"
@@ -118,7 +106,7 @@ function App() {
           placeholder="Enter Postcode"
           className="border p-2 m-4"
         />
-        <button type='button' className="border p-2 m-4" onClick={handlePostcodeClick}> Get Nearest 2 Stops</button>
+        <button type='button' className="border p-2 m-4" onClick={handlePostcodeClick}> Get Nearest 5 Stops</button>
       </div>
       <div style={{ textAlign: 'center' }}>{postCodeError && <div className="error-message">{postCodeError}</div>}</div>
       <div className='arrivals-data-container'>
