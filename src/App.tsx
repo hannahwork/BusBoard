@@ -4,8 +4,8 @@ import { fetchNearestStopsFromPostcode } from '../backend/fetchPostcodes';
 
 function App() {
 
-  const [arrivalsData, setArrivalsData] = useState<string>()
-  const [nearestStops, setNearestStops] = useState<string>()
+  const [arrivalsData, setArrivalsData] = useState<string>();
+  const [nearestStops, setNearestStops] = useState<string>();
   const [stopCode, setStopCode] = useState<string>("");
   const [postCode, setPostCode] = useState<string>("");
   const [error, setError] = useState<string>("");
@@ -36,8 +36,7 @@ function App() {
       setError("Please enter a valid postcode.");
       return;
     }
-
-     fetchNearestStopsFromPostcode(postCode)
+    fetchNearestStopsFromPostcode(postCode)
       .then(stops => {
         if (stops.length === 0) {
           setError("No stops found near this postcode.");
