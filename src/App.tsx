@@ -5,14 +5,14 @@ import { fetchNearestStopsFromPostcode } from '../backend/fetchPostcodes';
 
 function App() {
 
-  const [arrivalsData, setArrivalsData] = useState<string>()
-  const [nearestStops, setNearestStops] = useState<string>()
+  const [arrivalsData, setArrivalsData] = useState<string>();
+  const [nearestStops, setNearestStops] = useState<string>();
   const [stopCode, setStopCode] = useState<string>("");
   const [postCode, setPostCode] = useState<string>("");
   const [postCodeError, setPostCodeError] = useState<string>("");
   const [stopCodeError, setStopCodeError] = useState<string>("");
 
-  const  handleClick = async () =>{
+  const handleClick = async () => {
     if (stopCode.length === 0) {
       setStopCodeError("Please enter a valid stop code.");
       return;
@@ -20,19 +20,12 @@ function App() {
     const response = await fetchArrivals(stopCode);
     if (!response || response.length === 0) {
       setStopCodeError("No arrivals found for this stop code.");
-      setArrivalsData("");
+      setArrivalsData([]);
     } else {
       setStopCodeError("");
     }
     setArrivalsData(response);
   }
-
-  let arrivalsArray: any[] = [];
-    try {
-      arrivalsArray = arrivalsData ? JSON.parse(arrivalsData) : [];
-    } catch {
-      arrivalsArray = [];
-    }
 
   const handleUserInput = (event: React.ChangeEvent<HTMLInputElement>) => {
     setStopCode(event.target.value);
@@ -48,34 +41,38 @@ function App() {
     setPostCode(event.target.value);
     if (event.target.value.length === 0) {
       setPostCodeError("Please enter a valid postcode.");
-      } else {
+    } else {
       setPostCodeError("");
     }
+    fetchNearestStopsFromPostcode(postCode)
+      .then(stops => {
+        if (stops.length === 0) {
+          setError("No stops found near this postcode.");
+        } else {
+          setError("");
+          console.log("Nearest Stops:", stops);
+        }
+      })
+      .catch(err => {
+        setError("Error fetching stops: " + err.message);
+      });
+    setNearestStops(stops => JSON.stringify(stops, null, 2));
   };
-  
-  const  handlePostcodeClick = async () =>{
+
+  const handlePostcodeClick = async () => {
     if (postCode.length === 0) {
       setPostCodeError("Please enter a valid Post code.");
       return;
     }
-    const response = fetchNearestStopsFromPostcode(postCode)
-      if (!response || (await response).length === 0) {
+    const response = await fetchNearestStopsFromPostcode(postCode)
+    if (!response || (response).length === 0) {
       setPostCodeError("No stops near this Postcode.");
+      setNearestStops([]);
     } else {
       setPostCodeError("");
     }
-    console.log("response", response);
-    setNearestStops(await response);
+    setNearestStops(response);
   }
-
-  let nearestStopsArray: any[] = [];
-    try {
-      nearestStopsArray = nearestStops ? JSON.parse(nearestStops) : [];
-    } catch {
-      nearestStopsArray = [];
-    }
-
-    console.log("nearestStopsArray", nearestStopsArray);
 
   return (
     <div>
@@ -90,9 +87,9 @@ function App() {
         />
         <button type='button' className="border p-2 m-4" onClick={handleClick}> Get Live Arrivals</button>
       </div>
-      <div style={{ textAlign: 'center'}}>{stopCodeError && <div className="error-message">{stopCodeError}</div>}</div>
+      <div style={{ textAlign: 'center' }}>{stopCodeError && <div className="error-message">{stopCodeError}</div>}</div>
       <div className='arrivals-data-container'>
-        {arrivalsArray.length > 0 && (
+        {arrivalsData.length > 0 && (
           <table className="stop-point-buses-table">
             <thead className='table-header'>
               <tr>
@@ -102,7 +99,7 @@ function App() {
               </tr>
             </thead>
             <tbody>
-              {arrivalsArray.map((bus, idx) => (
+              {arrivalsData.map((bus, idx) => (
                 <tr key={idx}>
                   <td className='table-info-row'>{bus.lineName}</td>
                   <td className='table-info-row'>{bus.destinationName}</td>
@@ -112,7 +109,6 @@ function App() {
             </tbody>
           </table>
         )}
-        {arrivalsArray.length === 0 && <div>{arrivalsData}</div>}
       </div>
       <div className='get-input-and-button'>
         <input
@@ -123,10 +119,10 @@ function App() {
           className="border p-2 m-4"
         />
         <button type='button' className="border p-2 m-4" onClick={handlePostcodeClick}> Get Nearest 2 Stops</button>
-        </div>
-        <div style={{ textAlign: 'center'}}>{postCodeError && <div className="error-message">{postCodeError}</div>}</div>
-        <div className='arrivals-data-container'>
-        {nearestStopsArray.length > 0 && (
+      </div>
+      <div style={{ textAlign: 'center' }}>{postCodeError && <div className="error-message">{postCodeError}</div>}</div>
+      <div className='arrivals-data-container'>
+        {nearestStops.length > 0 && (
           <table className="stop-point-buses-table">
             <thead className='table-header'>
               <tr>
@@ -137,7 +133,7 @@ function App() {
               </tr>
             </thead>
             <tbody>
-              {nearestStopsArray.map((stop, idx) => (
+              {nearestStops.map((stop, idx) => (
                 <tr key={idx}>
                   <td className='table-info-row'>{stop.commonName}</td>
                   <td className='table-info-row'>{stop.lines && stop.lines.length > 0 ? stop.lines.map((line: any) => line.name).join(', ') : 'No lines'}</td>
@@ -148,9 +144,8 @@ function App() {
             </tbody>
           </table>
         )}
-        {nearestStopsArray.length === 0 && <div>{nearestStops}</div>}
       </div>
-      
+
     </div>
   )
 }
