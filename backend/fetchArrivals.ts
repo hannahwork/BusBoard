@@ -10,7 +10,7 @@ export async function fetchArrivals(stopcode: string) {
     ? [...busData].sort((a, b) => a.timeToStation - b.timeToStation)
     : [];
 
-  const data = JSON.stringify(sortedBusArrivals, null, 2);
+  const data = sortedBusArrivals;
   return data;
 }
 

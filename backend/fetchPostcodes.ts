@@ -18,5 +18,6 @@ export const fetchStopsNearCoords = async (lat: number, lon: number) => {
 export const fetchNearestStopsFromPostcode = async (postcode: string) => {
   const { latitude, longitude } = await fetchCoordsFromPostcode(postcode);
   const stops = await fetchStopsNearCoords(latitude, longitude);
-return JSON.stringify(stops, null, 2);
+  const data = stops;
+  return data;
 };
